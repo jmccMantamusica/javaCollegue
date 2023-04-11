@@ -1,5 +1,6 @@
 package com.practice.app.usuarios.models.entity;
 
+import com.practice.app.usuarios.models.dto.AlumnoRequestDto;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -24,5 +25,15 @@ public class Alumno {
     @PrePersist
     public void prePersist() {
         this.createAt = new Date();
+    }
+
+    public Alumno generarAlumno(AlumnoRequestDto alumnoRequestDto){
+
+        Alumno alumno = new Alumno();
+        alumno.setNombre(alumnoRequestDto.getNombre());
+        alumno.setApellido(alumnoRequestDto.getApellido());
+        alumno.setEmail(alumnoRequestDto.getEmail());
+
+        return alumno;
     }
 }

@@ -48,9 +48,12 @@ public class AlumnoController {
             return ResponseEntity.notFound().build();
         }
         Alumno alumnoDB = o.get();
-        alumnoDB.setNombre(alumnoRequestDto.getNombre());
-        alumnoDB.setApellido(alumnoRequestDto.getApellido());
-        alumnoDB.setEmail(alumnoRequestDto.getEmail());
+        alumnoDB.setNombre(
+                alumnoRequestDto.getNombre());
+        alumnoDB.setApellido(
+                alumnoRequestDto.getApellido());
+        alumnoDB.setEmail(
+                alumnoRequestDto.getEmail());
 
         Alumno alumno = service.save(alumnoDB);
 
