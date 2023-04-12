@@ -1,8 +1,9 @@
 package com.practice.app.usuarios.controllers;
 
-import com.practice.app.usuarios.models.dto.AlumnoRequestDto;
+import com.practice.app.usuarios.commons.AlumnoRequestMapper;
+import com.practice.app.usuarios.commons.AlumnoResponseMapper;
+import com.practice.app.usuarios.models.dto.AlumnoRequest;
 import com.practice.app.usuarios.models.entity.Alumno;
-import com.practice.app.usuarios.services.AlumnoConverter;
 import com.practice.app.usuarios.services.AlumnoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -22,7 +23,10 @@ public class AlumnoController {
     private AlumnoService service;
 
     @Autowired
-    private AlumnoConverter converter;
+    private AlumnoResponseMapper alumnoResponseMapper;
+
+    @Autowired
+    private AlumnoRequestMapper alumnoRequestMapper;
 
     @Operation(description = "Return all alumnos bundled into Response", summary ="Return 204 if no data found")
     @ApiResponses(value = {
@@ -43,7 +47,7 @@ public class AlumnoController {
         if(o.isEmpty()){
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(converter.convertAlumnoToAlumnoResponseDto(o.get()));
+        return ResponseEntity.ok(alumnoResponseMapper.AlumnoToAlumnoResponse(o.get()));
     }
 
     @Operation(description = "Return alumno updated bundled into Response")
@@ -51,8 +55,8 @@ public class AlumnoController {
             @ApiResponse(responseCode = "201",description = "Alumno"),
             @ApiResponse(responseCode = "500", description = "Internal error")})
     @PostMapping
-    public ResponseEntity<?> crear(@RequestBody AlumnoRequestDto alumnoRequestDto){
-        Alumno alumno = converter.convertAlumnoRequestDtotoAlumno(alumnoRequestDto);
+    public ResponseEntity<?> crear(@RequestBody AlumnoRequest alumnoRequest){
+        Alumno alumno = alumnoRequestMapper.AlumnoRequestToAlumno(alumnoRequest);
         Alumno alumnoDB = service.save(alumno);
         return ResponseEntity.status(HttpStatus.CREATED).body(alumnoDB);
     }
@@ -62,7 +66,7 @@ public class AlumnoController {
             @ApiResponse(responseCode = "201",description = "Alumno updated"),
             @ApiResponse(responseCode = "500", description = "Internal error")})
     @PutMapping("/{id}")
-    public ResponseEntity<?> editar(@RequestBody AlumnoRequestDto alumnoRequestDto, @PathVariable Long id){
+    public ResponseEntity<?> editar(@RequestBody AlumnoRequest alumnoRequestDto, @PathVariable Long id){
 
         Optional<Alumno> o = service.findById(id);
         if(o.isEmpty()){
@@ -71,7 +75,7 @@ public class AlumnoController {
         Alumno alumnoDB = o.get().generarAlumno(alumnoRequestDto);
         Alumno alumno = service.save(alumnoDB);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(converter.convertAlumnoToAlumnoResponseDto(alumno));
+        return ResponseEntity.status(HttpStatus.CREATED).body(alumnoResponseMapper.AlumnoToAlumnoResponse(alumno));
 
     }
 

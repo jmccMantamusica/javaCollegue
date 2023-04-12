@@ -1,6 +1,6 @@
 package com.practice.app.usuarios.models.entity;
 
-import com.practice.app.usuarios.models.dto.AlumnoRequestDto;
+import com.practice.app.usuarios.models.dto.AlumnoRequest;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -27,7 +27,7 @@ public class Alumno {
         this.createAt = new Date();
     }
 
-    public Alumno generarAlumno(AlumnoRequestDto alumnoRequestDto){
+    public Alumno generarAlumno(AlumnoRequest alumnoRequestDto){
 
         Alumno alumno = new Alumno();
         alumno.setNombre(alumnoRequestDto.getNombre());
