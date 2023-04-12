@@ -1,8 +1,8 @@
 package com.practice.app.usuarios.controllers;
 
-import com.practice.app.usuarios.commons.AlumnoRequestMapper;
-import com.practice.app.usuarios.commons.AlumnoResponseMapper;
+import com.practice.app.usuarios.commons.ObjectMapper;
 import com.practice.app.usuarios.models.dto.AlumnoRequest;
+import com.practice.app.usuarios.models.dto.AlumnoResponse;
 import com.practice.app.usuarios.models.entity.Alumno;
 import com.practice.app.usuarios.services.AlumnoService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,10 +23,10 @@ public class AlumnoController {
     private AlumnoService service;
 
     @Autowired
-    private AlumnoResponseMapper alumnoResponseMapper;
+    private ObjectMapper<Alumno, AlumnoRequest> request;
 
     @Autowired
-    private AlumnoRequestMapper alumnoRequestMapper;
+    private ObjectMapper<Alumno, AlumnoResponse> response;
 
     @Operation(description = "Return all alumnos bundled into Response", summary ="Return 204 if no data found")
     @ApiResponses(value = {
@@ -47,7 +47,7 @@ public class AlumnoController {
         if(o.isEmpty()){
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(alumnoResponseMapper.AlumnoToAlumnoResponse(o.get()));
+        return ResponseEntity.ok(response.EntityToDto(o.get()));
     }
 
     @Operation(description = "Return alumno updated bundled into Response")
@@ -56,7 +56,7 @@ public class AlumnoController {
             @ApiResponse(responseCode = "500", description = "Internal error")})
     @PostMapping
     public ResponseEntity<?> crear(@RequestBody AlumnoRequest alumnoRequest){
-        Alumno alumno = alumnoRequestMapper.AlumnoRequestToAlumno(alumnoRequest);
+        Alumno alumno = request.DtoToEntity(alumnoRequest);
         Alumno alumnoDB = service.save(alumno);
         return ResponseEntity.status(HttpStatus.CREATED).body(alumnoDB);
     }
@@ -75,7 +75,7 @@ public class AlumnoController {
         Alumno alumnoDB = o.get().generarAlumno(alumnoRequestDto);
         Alumno alumno = service.save(alumnoDB);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(alumnoResponseMapper.AlumnoToAlumnoResponse(alumno));
+        return ResponseEntity.status(HttpStatus.CREATED).body(response.EntityToDto(alumno));
 
     }
 

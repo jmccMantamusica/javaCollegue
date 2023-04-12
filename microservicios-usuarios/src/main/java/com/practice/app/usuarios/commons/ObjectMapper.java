@@ -12,15 +12,15 @@ import java.util.List;
  * @author jcagigas
  */
 @Mapper(componentModel = "spring")
-public interface AlumnoResponseMapper {
+public interface ObjectMapper<E, S> {
 
-    AlumnoResponse AlumnoToAlumnoResponse(Alumno alumno);
+    S EntityToDto(E entity);
 
-    List<AlumnoResponse> AlumnoListToAlumnoResponseList(List<Alumno> source);
-
-    @InheritInverseConfiguration
-    Alumno AlumnoResponseToAlumno(AlumnoResponse srr);
+    List<S> EntityListToDtoList(List<E> list);
 
     @InheritInverseConfiguration
-    List<Alumno> AlumnoResponseToAlumnoList(List<AlumnoResponse> source);
+    E DtoToEntity(S srr);
+
+    @InheritInverseConfiguration
+    List<E> DtoListToEntityList(List<S> list);
 }
