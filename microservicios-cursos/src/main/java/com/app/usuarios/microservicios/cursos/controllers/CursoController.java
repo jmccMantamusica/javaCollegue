@@ -3,7 +3,10 @@ package com.app.usuarios.microservicios.cursos.controllers;
 import com.app.usuarios.microservicios.commons.models.dto.AlumnoRequest;
 import com.app.usuarios.microservicios.commons.models.dto.AlumnoResponse;
 import com.app.usuarios.microservicios.commons.models.entity.Alumno;
-import com.app.usuarios.microservicios.cursos.commons.ObjectMapper;
+import com.app.usuarios.microservicios.cursos.commons.AlumnoRequestMapper;
+import com.app.usuarios.microservicios.cursos.commons.AlumnoResponseMapper;
+import com.app.usuarios.microservicios.cursos.commons.CursoRequestMapper;
+import com.app.usuarios.microservicios.cursos.commons.CursoResponseMapper;
 import com.app.usuarios.microservicios.cursos.models.dto.CursoRequest;
 import com.app.usuarios.microservicios.cursos.models.dto.CursoResponse;
 import com.app.usuarios.microservicios.cursos.models.entity.Curso;
@@ -28,16 +31,16 @@ public class CursoController {
     private CursoService service;
 
     @Autowired
-    private ObjectMapper<Curso, CursoRequest> request;
+    private CursoRequestMapper requestCurso;
 
     @Autowired
-    private ObjectMapper<Curso, CursoResponse> response;
+    private CursoResponseMapper responseCurso;
 
     @Autowired
-    private ObjectMapper<Alumno, AlumnoRequest> requestAlumno;
+    private AlumnoRequestMapper requestAlumno;
 
     @Autowired
-    private ObjectMapper<Alumno, AlumnoResponse> responseAlumno;
+    private AlumnoResponseMapper responseAlumno;
 
     @Operation(description = "Return all cursos bundled into Response", summary ="Return 204 if no data found")
     @ApiResponses(value = {
@@ -58,7 +61,7 @@ public class CursoController {
         if(o.isEmpty()){
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(response.EntityToDto(o.get()));
+        return ResponseEntity.ok(responseCurso.EntityToDto(o.get()));
     }
 
     @Operation(description = "Return curso updated bundled into Response")
@@ -67,7 +70,7 @@ public class CursoController {
             @ApiResponse(responseCode = "500", description = "Internal error")})
     @PostMapping
     public ResponseEntity<?> crear(@RequestBody CursoRequest cursoRequest){
-        Curso curso = request.DtoToEntity(cursoRequest);
+        Curso curso = requestCurso.DtoToEntity(cursoRequest);
         Curso cursoDB = service.save(curso);
         return ResponseEntity.status(HttpStatus.CREATED).body(cursoDB);
     }
@@ -86,7 +89,7 @@ public class CursoController {
         Curso cursoDB = o.get().generarCurso(cursoRequest);
         Curso curso = service.save(cursoDB);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(response.EntityToDto(curso));
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseCurso.EntityToDto(curso));
 
     }
 
@@ -113,7 +116,7 @@ public class CursoController {
         Curso cursoDb = o.get();
         List<Alumno> alumnoList = requestAlumno.DtoListToEntityList(alumnoRequestList);
         alumnoList.forEach(cursoDb::addAlumno);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response.EntityToDto(cursoDb));
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseCurso.EntityToDto(cursoDb));
     }
 
     @Operation(description = "Return curso updated, alumno deleted")
@@ -128,6 +131,6 @@ public class CursoController {
         }
         Curso cursoDb = o.get();
         cursoDb.removeAlumno(requestAlumno.DtoToEntity(alumnoRequest));
-        return ResponseEntity.status(HttpStatus.CREATED).body(response.EntityToDto(cursoDb));
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseCurso.EntityToDto(cursoDb));
     }
 }

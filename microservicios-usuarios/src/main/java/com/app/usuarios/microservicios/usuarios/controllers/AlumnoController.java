@@ -1,9 +1,9 @@
 package com.app.usuarios.microservicios.usuarios.controllers;
 
-import com.app.usuarios.microservicios.usuarios.commons.ObjectMapper;
 import com.app.usuarios.microservicios.commons.models.dto.AlumnoRequest;
-import com.app.usuarios.microservicios.commons.models.dto.AlumnoResponse;
 import com.app.usuarios.microservicios.commons.models.entity.Alumno;
+import com.app.usuarios.microservicios.usuarios.commons.AlumnoRequestMapper;
+import com.app.usuarios.microservicios.usuarios.commons.AlumnoResponseMapper;
 import com.app.usuarios.microservicios.usuarios.services.AlumnoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -23,10 +23,10 @@ public class AlumnoController {
     private AlumnoService service;
 
     @Autowired
-    private ObjectMapper<Alumno, AlumnoRequest> request;
+    private AlumnoRequestMapper request;
 
     @Autowired
-    private ObjectMapper<Alumno, AlumnoResponse> response;
+    private AlumnoResponseMapper response;
 
     @Operation(description = "Return all alumnos bundled into Response", summary ="Return 204 if no data found")
     @ApiResponses(value = {
