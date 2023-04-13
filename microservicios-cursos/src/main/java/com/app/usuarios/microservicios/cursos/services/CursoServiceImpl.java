@@ -39,4 +39,10 @@ public class CursoServiceImpl implements CursoService{
         cursoRepository.deleteById(id);
 
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Curso> findCursoByAlumnoId(Long id) {
+        return cursoRepository.findCursoByAlumnoId(id);
+    }
 }

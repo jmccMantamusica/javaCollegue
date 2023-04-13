@@ -1,11 +1,9 @@
 package com.app.usuarios.microservicios.commons.models.entity;
 
-import com.app.usuarios.microservicios.commons.models.dto.AlumnoRequest;
 import lombok.Data;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.Objects;
 
 @Entity
 @Table(name = "alumnos")
@@ -28,12 +26,12 @@ public class Alumno {
         this.createAt = new Date();
     }
 
-    public Alumno generarAlumno(AlumnoRequest alumnoRequestDto){
+    public Alumno generarAlumno(Alumno alumnoRequest){
 
         Alumno alumno = new Alumno();
-        alumno.setNombre(alumnoRequestDto.getNombre());
-        alumno.setApellido(alumnoRequestDto.getApellido());
-        alumno.setEmail(alumnoRequestDto.getEmail());
+        alumno.setNombre(alumnoRequest.getNombre());
+        alumno.setApellido(alumnoRequest.getApellido());
+        alumno.setEmail(alumnoRequest.getEmail());
 
         return alumno;
     }

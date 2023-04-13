@@ -13,4 +13,6 @@ public interface CursoService {
     public Curso save(Curso alumno);
 
     public void deleteById(Long id);
+
+    public Optional<Curso> findCursoByAlumnoId(Long id);
 }

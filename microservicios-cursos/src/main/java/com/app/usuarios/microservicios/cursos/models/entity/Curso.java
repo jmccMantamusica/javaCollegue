@@ -1,7 +1,6 @@
 package com.app.usuarios.microservicios.cursos.models.entity;
 
 import com.app.usuarios.microservicios.commons.models.entity.Alumno;
-import com.app.usuarios.microservicios.cursos.models.dto.CursoRequest;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -20,7 +19,7 @@ public class Curso {
     private String nombre;
 
     @OneToMany(fetch = FetchType.LAZY)
-    private List<Alumno> alumnoList;
+    private List<Alumno> alumnos;
 
     @Column(name = "create_at")
     @Temporal(TemporalType.TIMESTAMP)
@@ -31,18 +30,18 @@ public class Curso {
         this.createAt = new Date();
     }
 
-    public Curso generarCurso(CursoRequest cursoRequest) {
+    public Curso generarCurso(Curso curso) {
 
-        Curso curso = new Curso();
-        curso.setNombre(cursoRequest.getNombre());
-        return curso;
+        Curso cursoFinal = new Curso();
+        cursoFinal.setNombre(curso.getNombre());
+        return cursoFinal;
     }
 
     public void addAlumno(Alumno alumno){
-        this.alumnoList.add(alumno);
+        this.alumnos.add(alumno);
     }
 
     public void removeAlumno(Alumno alumno){
-        this.alumnoList.remove(alumno);
+        this.alumnos.remove(alumno);
     }
 }

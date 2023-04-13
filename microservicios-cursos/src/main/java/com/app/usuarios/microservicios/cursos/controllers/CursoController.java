@@ -1,14 +1,6 @@
 package com.app.usuarios.microservicios.cursos.controllers;
 
-import com.app.usuarios.microservicios.commons.models.dto.AlumnoRequest;
-import com.app.usuarios.microservicios.commons.models.dto.AlumnoResponse;
 import com.app.usuarios.microservicios.commons.models.entity.Alumno;
-import com.app.usuarios.microservicios.cursos.commons.AlumnoRequestMapper;
-import com.app.usuarios.microservicios.cursos.commons.AlumnoResponseMapper;
-import com.app.usuarios.microservicios.cursos.commons.CursoRequestMapper;
-import com.app.usuarios.microservicios.cursos.commons.CursoResponseMapper;
-import com.app.usuarios.microservicios.cursos.models.dto.CursoRequest;
-import com.app.usuarios.microservicios.cursos.models.dto.CursoResponse;
 import com.app.usuarios.microservicios.cursos.models.entity.Curso;
 import com.app.usuarios.microservicios.cursos.services.CursoService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,18 +22,6 @@ public class CursoController {
     @Autowired
     private CursoService service;
 
-    @Autowired
-    private CursoRequestMapper requestCurso;
-
-    @Autowired
-    private CursoResponseMapper responseCurso;
-
-    @Autowired
-    private AlumnoRequestMapper requestAlumno;
-
-    @Autowired
-    private AlumnoResponseMapper responseAlumno;
-
     @Operation(description = "Return all cursos bundled into Response", summary ="Return 204 if no data found")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",description = "Exito: Listado de cursos."),
@@ -61,7 +41,20 @@ public class CursoController {
         if(o.isEmpty()){
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(responseCurso.EntityToDto(o.get()));
+        return ResponseEntity.ok(o.get());
+    }
+
+    @Operation(description = "Return curso by Alumno id bundled into Response")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "Curso"),
+            @ApiResponse(responseCode = "500", description = "Internal error")})
+    @GetMapping("/alumno/{id}")
+    public ResponseEntity<?> verPorAlumnoId(@PathVariable Long id){
+        Optional<Curso> o = service.findCursoByAlumnoId(id);
+        if(o.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(o.get());
     }
 
     @Operation(description = "Return curso updated bundled into Response")
@@ -69,9 +62,8 @@ public class CursoController {
             @ApiResponse(responseCode = "201",description = "Curso"),
             @ApiResponse(responseCode = "500", description = "Internal error")})
     @PostMapping
-    public ResponseEntity<?> crear(@RequestBody CursoRequest cursoRequest){
-        Curso curso = requestCurso.DtoToEntity(cursoRequest);
-        Curso cursoDB = service.save(curso);
+    public ResponseEntity<?> crear(@RequestBody Curso cursoRequest){
+        Curso cursoDB = service.save(cursoRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(cursoDB);
     }
 
@@ -80,7 +72,7 @@ public class CursoController {
             @ApiResponse(responseCode = "201",description = "Curso updated"),
             @ApiResponse(responseCode = "500", description = "Internal error")})
     @PutMapping("/{id}")
-    public ResponseEntity<?> editar(@RequestBody CursoRequest cursoRequest, @PathVariable Long id){
+    public ResponseEntity<?> editar(@RequestBody Curso cursoRequest, @PathVariable Long id){
 
         Optional<Curso> o = service.findById(id);
         if(o.isEmpty()){
@@ -89,7 +81,7 @@ public class CursoController {
         Curso cursoDB = o.get().generarCurso(cursoRequest);
         Curso curso = service.save(cursoDB);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseCurso.EntityToDto(curso));
+        return ResponseEntity.status(HttpStatus.CREATED).body(curso);
 
     }
 
@@ -108,15 +100,15 @@ public class CursoController {
             @ApiResponse(responseCode = "201",description = "Curso updated"),
             @ApiResponse(responseCode = "500", description = "Internal error")})
     @PutMapping("/{id}/asignar-alumnos")
-    public ResponseEntity<?> asignarAlumnos(@RequestBody List<AlumnoRequest> alumnoRequestList, @PathVariable Long id){
+    public ResponseEntity<?> asignarAlumnos(@RequestBody List<Alumno> alumnoRequestList, @PathVariable Long id){
         Optional<Curso> o = this.service.findById(id);
         if(o.isEmpty()){
             return ResponseEntity.notFound().build();
         }
         Curso cursoDb = o.get();
-        List<Alumno> alumnoList = requestAlumno.DtoListToEntityList(alumnoRequestList);
-        alumnoList.forEach(cursoDb::addAlumno);
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseCurso.EntityToDto(cursoDb));
+        alumnoRequestList.forEach(cursoDb::addAlumno);
+        Curso cursoFinal = service.save(cursoDb);
+        return ResponseEntity.status(HttpStatus.CREATED).body(cursoFinal);
     }
 
     @Operation(description = "Return curso updated, alumno deleted")
@@ -124,13 +116,14 @@ public class CursoController {
             @ApiResponse(responseCode = "201",description = "Curso updated"),
             @ApiResponse(responseCode = "500", description = "Internal error")})
     @PutMapping("/{id}/eliminar-alumno")
-    public ResponseEntity<?> eliminarAlumno(@RequestBody AlumnoRequest alumnoRequest, @PathVariable Long id){
+    public ResponseEntity<?> eliminarAlumno(@RequestBody Alumno alumnoRequest, @PathVariable Long id){
         Optional<Curso> o = this.service.findById(id);
         if(o.isEmpty()){
             return ResponseEntity.notFound().build();
         }
         Curso cursoDb = o.get();
-        cursoDb.removeAlumno(requestAlumno.DtoToEntity(alumnoRequest));
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseCurso.EntityToDto(cursoDb));
+        cursoDb.removeAlumno(alumnoRequest);
+        Curso cursoFinal = service.save(cursoDb);
+        return ResponseEntity.status(HttpStatus.CREATED).body(cursoFinal);
     }
 }
