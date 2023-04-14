@@ -36,12 +36,12 @@ public class Alumno {
 
     public Alumno generarAlumno(Alumno alumnoRequest){
 
-        Alumno alumno = new Alumno();
-        alumno.setNombre(alumnoRequest.getNombre());
-        alumno.setApellido(alumnoRequest.getApellido());
-        alumno.setEmail(alumnoRequest.getEmail());
 
-        return alumno;
+        this.setNombre(alumnoRequest.getNombre());
+        this.setApellido(alumnoRequest.getApellido());
+        this.setEmail(alumnoRequest.getEmail());
+
+        return this;
     }
 
     @Override

@@ -42,9 +42,8 @@ public class Curso {
 
     public Curso generarCurso(Curso curso) {
 
-        Curso cursoFinal = new Curso();
-        cursoFinal.setNombre(curso.getNombre());
-        return cursoFinal;
+        this.setNombre(curso.getNombre());
+        return this;
     }
 
     public void addAlumno(Alumno alumno){
