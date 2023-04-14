@@ -17,23 +17,24 @@ public class ExamenServiceImpl implements ExamenService {
     @Override
     @Transactional(readOnly = true)
     public Iterable<Examen> findAll() {
-        return null;
+        return repository.findAll();
     }
 
     @Override
     @Transactional(readOnly = true)
     public Optional<Examen> findById(Long id) {
-        return Optional.empty();
+        return repository.findById(id);
     }
 
     @Override
     @Transactional
     public Examen save(Examen curso) {
-        return null;
+        return repository.save(curso);
     }
-    @Transactional
     @Override
+    @Transactional
     public void deleteById(Long id) {
+        repository.deleteById(id);
 
     }
 }
