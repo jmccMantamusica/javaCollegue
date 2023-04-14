@@ -1,6 +1,6 @@
 package com.app.usuarios.microservicios.examenes.models.repository;
 
-import com.app.usuarios.microservicios.examenes.models.entity.Examen;
+import com.app.usuarios.microservicios.commons.models.entity.Examen;
 import org.springframework.data.repository.CrudRepository;
 
 public interface ExamenRepository extends CrudRepository<Examen, Long> {

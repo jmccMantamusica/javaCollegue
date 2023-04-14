@@ -1,6 +1,6 @@
 package com.app.usuarios.microservicios.examenes.controllers;
 
-import com.app.usuarios.microservicios.examenes.models.entity.Examen;
+import com.app.usuarios.microservicios.commons.models.entity.Examen;
 import com.app.usuarios.microservicios.examenes.services.ExamenService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

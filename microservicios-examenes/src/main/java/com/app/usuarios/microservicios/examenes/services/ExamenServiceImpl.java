@@ -1,6 +1,6 @@
 package com.app.usuarios.microservicios.examenes.services;
 
-import com.app.usuarios.microservicios.examenes.models.entity.Examen;
+import com.app.usuarios.microservicios.commons.models.entity.Examen;
 import com.app.usuarios.microservicios.examenes.models.repository.ExamenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

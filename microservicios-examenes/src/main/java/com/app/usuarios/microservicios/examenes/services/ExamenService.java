@@ -1,6 +1,6 @@
 package com.app.usuarios.microservicios.examenes.services;
 
-import com.app.usuarios.microservicios.examenes.models.entity.Examen;
+import com.app.usuarios.microservicios.commons.models.entity.Examen;
 
 import java.util.Optional;
 
