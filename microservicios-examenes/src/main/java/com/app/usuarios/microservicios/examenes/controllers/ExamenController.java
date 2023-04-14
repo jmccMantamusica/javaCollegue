@@ -10,7 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.data.domain.Pageable;
+import java.util.List;
 import java.util.Optional;
 
 @Tag(name = "Examen API", description = "This APi serve all functionality for management Examenes")
@@ -19,6 +20,15 @@ public class ExamenController {
 
     @Autowired
     private ExamenService service;
+
+    @Operation(description = "Return all page bundled into Response", summary ="Return 204 if no data found")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "Exito: Páginas."),
+            @ApiResponse(responseCode = "500", description = "Internal error")})
+    @GetMapping("/pagina")
+    public ResponseEntity<?> paginas(Pageable pageable){
+        return ResponseEntity.ok().body(service.findAll(pageable));
+    }
 
     @Operation(description = "Return all examenes bundled into Response", summary ="Return 204 if no data found")
     @ApiResponses(value = {
@@ -87,4 +97,25 @@ public class ExamenController {
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(description = "Return examen by filter bundled into Response")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "Examen"),
+            @ApiResponse(responseCode = "500", description = "Internal error")})
+    @GetMapping("/filtrar/{value}")
+    public ResponseEntity<?> filtrar(@PathVariable String value){
+        Optional<List<Examen>> olist = service.findByNombre(value);
+        if(olist.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(olist.get());
+    }
+
+    @Operation(description = "Return asignaturas")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "Asignaturas"),
+            @ApiResponse(responseCode = "500", description = "Internal error")})
+    @GetMapping("/asignaturas")
+    public ResponseEntity<?> listarAsignaturas(){
+        return ResponseEntity.ok().body(service.findAllAsignaturas());
+    }
 }

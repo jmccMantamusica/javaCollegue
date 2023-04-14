@@ -1,7 +1,9 @@
 package com.app.usuarios.microservicios.commons.models.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -24,6 +26,9 @@ public class Examen {
     @JsonIgnoreProperties(value = {"examen"}, allowSetters = true)
     @OneToMany(mappedBy = "examen", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Pregunta> preguntas;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Asignatura asignatura;
 
     @PrePersist
     public void prePersist() {
@@ -48,10 +53,10 @@ public class Examen {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if(!(o instanceof Pregunta)){
+        if(!(o instanceof Examen)){
             return false;
         }
-        Pregunta a = (Pregunta) o;
+        Examen a = (Examen) o;
         return this.id != null && this.id.equals(a.getId());
     }
 

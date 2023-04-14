@@ -1,6 +1,7 @@
 package com.app.usuarios.microservicios.cursos.controllers;
 
 import com.app.usuarios.microservicios.commons.models.entity.Alumno;
+import com.app.usuarios.microservicios.commons.models.entity.Examen;
 import com.app.usuarios.microservicios.cursos.models.entity.Curso;
 import com.app.usuarios.microservicios.cursos.services.CursoService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -8,10 +9,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -21,6 +22,15 @@ public class CursoController {
 
     @Autowired
     private CursoService service;
+
+    @Operation(description = "Return all page of cursos bundled into Response", summary ="Return 204 if no data found")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "Exito: Páginas."),
+            @ApiResponse(responseCode = "500", description = "Internal error")})
+    @GetMapping("/pagina")
+    public ResponseEntity<?> paginas(Pageable pageable){
+        return ResponseEntity.ok().body(service.findAll(pageable));
+    }
 
     @Operation(description = "Return all cursos bundled into Response", summary ="Return 204 if no data found")
     @ApiResponses(value = {
@@ -123,6 +133,38 @@ public class CursoController {
         }
         Curso cursoDb = o.get();
         cursoDb.removeAlumno(alumnoRequest);
+        Curso cursoFinal = service.save(cursoDb);
+        return ResponseEntity.status(HttpStatus.CREATED).body(cursoFinal);
+    }
+
+    @Operation(description = "Return curso updated, examen asigned")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201",description = "Curso updated"),
+            @ApiResponse(responseCode = "500", description = "Internal error")})
+    @PutMapping("/{id}/asignar-examenes")
+    public ResponseEntity<?> asignarExamenes(@RequestBody List<Examen> examenRequest, @PathVariable Long id){
+        Optional<Curso> o = this.service.findById(id);
+        if(o.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+        Curso cursoDb = o.get();
+        examenRequest.forEach(cursoDb::addExamen);
+        Curso cursoFinal = service.save(cursoDb);
+        return ResponseEntity.status(HttpStatus.CREATED).body(cursoFinal);
+    }
+
+    @Operation(description = "Return curso updated, examen deleted")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201",description = "Curso updated"),
+            @ApiResponse(responseCode = "500", description = "Internal error")})
+    @PutMapping("/{id}/eliminar-examen")
+    public ResponseEntity<?> eliminarExamen(@RequestBody Examen examenRequest, @PathVariable Long id){
+        Optional<Curso> o = this.service.findById(id);
+        if(o.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+        Curso cursoDb = o.get();
+        cursoDb.removeExamen(examenRequest);
         Curso cursoFinal = service.save(cursoDb);
         return ResponseEntity.status(HttpStatus.CREATED).body(cursoFinal);
     }

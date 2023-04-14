@@ -1,7 +1,10 @@
 package com.app.usuarios.microservicios.cursos.models.entity;
 
 import com.app.usuarios.microservicios.commons.models.entity.Alumno;
+import com.app.usuarios.microservicios.commons.models.entity.Examen;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -10,6 +13,8 @@ import java.util.List;
 @Entity
 @Table(name = "cursos")
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Curso {
 
     @Id
@@ -20,6 +25,9 @@ public class Curso {
 
     @OneToMany(fetch = FetchType.LAZY)
     private List<Alumno> alumnos;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    private  List<Examen> examenes;
 
     @Column(name = "create_at")
     @Temporal(TemporalType.TIMESTAMP)
@@ -43,5 +51,15 @@ public class Curso {
 
     public void removeAlumno(Alumno alumno){
         this.alumnos.remove(alumno);
+    }
+
+    public void  addExamen(Examen examen){
+        this.examenes.add(examen);
+
+    }
+
+    public void  removeExamen(Examen examen){
+        this.examenes.remove(examen);
+
     }
 }

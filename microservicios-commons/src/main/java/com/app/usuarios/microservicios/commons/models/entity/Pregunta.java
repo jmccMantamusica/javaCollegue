@@ -1,7 +1,9 @@
 package com.app.usuarios.microservicios.commons.models.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -28,5 +30,15 @@ public class Pregunta {
     @PrePersist
     public void prePersist() {
         this.createAt = new Date();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if(!(o instanceof Pregunta)){
+            return false;
+        }
+        Pregunta a = (Pregunta) o;
+        return this.id != null && this.id.equals(a.getId());
     }
 }

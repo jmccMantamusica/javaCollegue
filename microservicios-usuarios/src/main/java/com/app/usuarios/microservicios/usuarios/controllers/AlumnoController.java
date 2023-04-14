@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,15 @@ public class AlumnoController {
 
     @Autowired
     private AlumnoService service;
+
+    @Operation(description = "Return all page bundled into Response", summary ="Return 204 if no data found")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "Exito: Páginas."),
+            @ApiResponse(responseCode = "500", description = "Internal error")})
+    @GetMapping("/pagina")
+    public ResponseEntity<?> paginas(Pageable pageable){
+        return ResponseEntity.ok().body(service.findAll(pageable));
+    }
 
     @Operation(description = "Return all alumnos bundled into Response", summary ="Return 204 if no data found")
     @ApiResponses(value = {

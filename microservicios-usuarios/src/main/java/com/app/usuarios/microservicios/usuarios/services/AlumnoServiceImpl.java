@@ -3,9 +3,10 @@ package com.app.usuarios.microservicios.usuarios.services;
 import com.app.usuarios.microservicios.commons.models.entity.Alumno;
 import com.app.usuarios.microservicios.usuarios.repository.AlumnoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,6 +21,11 @@ public class AlumnoServiceImpl implements AlumnoService{
     @Transactional(readOnly = true)
     public Iterable<Alumno> findAll() {
         return alumnoRepository.findAll();
+    }
+
+    @Override
+    public Page<Alumno> findAll(Pageable pageable) {
+        return null;
     }
 
     @Override

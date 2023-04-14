@@ -3,9 +3,10 @@ package com.app.usuarios.microservicios.cursos.services;
 import com.app.usuarios.microservicios.cursos.repository.CursoRepository;
 import com.app.usuarios.microservicios.cursos.models.entity.Curso;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import org.springframework.data.domain.Pageable;
 import java.util.Optional;
 
 @Service
@@ -19,6 +20,12 @@ public class CursoServiceImpl implements CursoService{
     @Transactional(readOnly = true)
     public Iterable<Curso> findAll() {
         return cursoRepository.findAll();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Curso> findAll(Pageable pageable) {
+        return cursoRepository.findAll(pageable);
     }
 
     @Override
