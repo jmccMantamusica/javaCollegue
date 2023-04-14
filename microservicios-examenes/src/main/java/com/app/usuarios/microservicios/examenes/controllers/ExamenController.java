@@ -9,9 +9,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Pageable;
+
+import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Tag(name = "Examen API", description = "This APi serve all functionality for management Examenes")
@@ -57,7 +62,12 @@ public class ExamenController {
             @ApiResponse(responseCode = "201",description = "Curso"),
             @ApiResponse(responseCode = "500", description = "Internal error")})
     @PostMapping
-    public ResponseEntity<?> crear(@RequestBody Examen examen){
+    public ResponseEntity<?> crear(@Valid @RequestBody Examen examen, BindingResult result){
+
+        if(result.hasErrors()){
+            return this.validar(result);
+        }
+
         Examen examenDB = service.save(examen);
         return ResponseEntity.status(HttpStatus.CREATED).body(examenDB);
     }
@@ -67,7 +77,11 @@ public class ExamenController {
             @ApiResponse(responseCode = "201",description = "Curso updated"),
             @ApiResponse(responseCode = "500", description = "Internal error")})
     @PutMapping("/{id}")
-    public ResponseEntity<?> editar(@RequestBody Examen examen, @PathVariable Long id){
+    public ResponseEntity<?> editar(@Valid @RequestBody Examen examen, BindingResult result, @PathVariable Long id){
+
+        if(result.hasErrors()){
+            return this.validar(result);
+        }
 
         Optional<Examen> o = service.findById(id);
         if(o.isEmpty()){
@@ -117,5 +131,13 @@ public class ExamenController {
     @GetMapping("/asignaturas")
     public ResponseEntity<?> listarAsignaturas(){
         return ResponseEntity.ok().body(service.findAllAsignaturas());
+    }
+
+    private ResponseEntity<?> validar(BindingResult result){
+        Map<String, Object> errores = new HashMap<>();
+        result.getFieldErrors().forEach(err -> {
+            errores.put(err.getField(), " El campo " + err.getField() + " " + err.getDefaultMessage());
+        });
+        return ResponseEntity.badRequest().body(errores);
     }
 }

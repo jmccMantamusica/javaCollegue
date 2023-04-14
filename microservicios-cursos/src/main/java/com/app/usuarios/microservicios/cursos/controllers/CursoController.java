@@ -12,8 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Tag(name = "Curso API", description = "This APi serve all functionality for management Cursos")
@@ -72,7 +77,10 @@ public class CursoController {
             @ApiResponse(responseCode = "201",description = "Curso"),
             @ApiResponse(responseCode = "500", description = "Internal error")})
     @PostMapping
-    public ResponseEntity<?> crear(@RequestBody Curso cursoRequest){
+    public ResponseEntity<?> crear(@Valid @RequestBody Curso cursoRequest, BindingResult result){
+        if(result.hasErrors()){
+            return this.validar(result);
+        }
         Curso cursoDB = service.save(cursoRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(cursoDB);
     }
@@ -82,7 +90,12 @@ public class CursoController {
             @ApiResponse(responseCode = "201",description = "Curso updated"),
             @ApiResponse(responseCode = "500", description = "Internal error")})
     @PutMapping("/{id}")
-    public ResponseEntity<?> editar(@RequestBody Curso cursoRequest, @PathVariable Long id){
+    public ResponseEntity<?> editar(@Valid @RequestBody Curso cursoRequest, BindingResult result,
+                                    @PathVariable Long id){
+
+        if(result.hasErrors()){
+            return this.validar(result);
+        }
 
         Optional<Curso> o = service.findById(id);
         if(o.isEmpty()){
@@ -110,7 +123,8 @@ public class CursoController {
             @ApiResponse(responseCode = "201",description = "Curso updated"),
             @ApiResponse(responseCode = "500", description = "Internal error")})
     @PutMapping("/{id}/asignar-alumnos")
-    public ResponseEntity<?> asignarAlumnos(@RequestBody List<Alumno> alumnoRequestList, @PathVariable Long id){
+    public ResponseEntity<?> asignarAlumnos(@Valid @RequestBody List<Alumno> alumnoRequestList,
+                                            @PathVariable Long id){
         Optional<Curso> o = this.service.findById(id);
         if(o.isEmpty()){
             return ResponseEntity.notFound().build();
@@ -126,7 +140,12 @@ public class CursoController {
             @ApiResponse(responseCode = "201",description = "Curso updated"),
             @ApiResponse(responseCode = "500", description = "Internal error")})
     @PutMapping("/{id}/eliminar-alumno")
-    public ResponseEntity<?> eliminarAlumno(@RequestBody Alumno alumnoRequest, @PathVariable Long id){
+    public ResponseEntity<?> eliminarAlumno(@Valid @RequestBody Alumno alumnoRequest, BindingResult result,
+                                            @PathVariable Long id){
+        if(result.hasErrors()){
+            return this.validar(result);
+        }
+
         Optional<Curso> o = this.service.findById(id);
         if(o.isEmpty()){
             return ResponseEntity.notFound().build();
@@ -142,7 +161,8 @@ public class CursoController {
             @ApiResponse(responseCode = "201",description = "Curso updated"),
             @ApiResponse(responseCode = "500", description = "Internal error")})
     @PutMapping("/{id}/asignar-examenes")
-    public ResponseEntity<?> asignarExamenes(@RequestBody List<Examen> examenRequest, @PathVariable Long id){
+    public ResponseEntity<?> asignarExamenes(@Valid @RequestBody List<Examen> examenRequest,
+                                             @PathVariable Long id){
         Optional<Curso> o = this.service.findById(id);
         if(o.isEmpty()){
             return ResponseEntity.notFound().build();
@@ -158,7 +178,13 @@ public class CursoController {
             @ApiResponse(responseCode = "201",description = "Curso updated"),
             @ApiResponse(responseCode = "500", description = "Internal error")})
     @PutMapping("/{id}/eliminar-examen")
-    public ResponseEntity<?> eliminarExamen(@RequestBody Examen examenRequest, @PathVariable Long id){
+    public ResponseEntity<?> eliminarExamen(@Valid @RequestBody Examen examenRequest, BindingResult result,
+                                            @PathVariable Long id){
+
+        if(result.hasErrors()){
+            return this.validar(result);
+        }
+
         Optional<Curso> o = this.service.findById(id);
         if(o.isEmpty()){
             return ResponseEntity.notFound().build();
@@ -167,5 +193,13 @@ public class CursoController {
         cursoDb.removeExamen(examenRequest);
         Curso cursoFinal = service.save(cursoDb);
         return ResponseEntity.status(HttpStatus.CREATED).body(cursoFinal);
+    }
+
+    private ResponseEntity<?> validar(BindingResult result){
+        Map<String, Object> errores = new HashMap<>();
+        result.getFieldErrors().forEach(err -> {
+            errores.put(err.getField(), " El campo " + err.getField() + " " + err.getDefaultMessage());
+        });
+        return ResponseEntity.badRequest().body(errores);
     }
 }

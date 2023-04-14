@@ -10,9 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 @Tag(name = "Alumno API", description = "This APi serve all functionality for management Alumnos")
 @RestController
@@ -52,7 +56,6 @@ public class AlumnoController {
         return ResponseEntity.ok(o.get());
     }
 
-
     @Operation(description = "Return alumno by id bundled into Response")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",description = "Alumno"),
@@ -71,7 +74,11 @@ public class AlumnoController {
             @ApiResponse(responseCode = "201",description = "Alumno"),
             @ApiResponse(responseCode = "500", description = "Internal error")})
     @PostMapping
-    public ResponseEntity<?> crear(@RequestBody Alumno alumno){
+    public ResponseEntity<?> crear(@Valid @RequestBody Alumno alumno, BindingResult result){
+
+        if(result.hasErrors()){
+            return this.validar(result);
+        }
         Alumno alumnoDB = service.save(alumno);
         return ResponseEntity.status(HttpStatus.CREATED).body(alumnoDB);
     }
@@ -81,7 +88,12 @@ public class AlumnoController {
             @ApiResponse(responseCode = "201",description = "Alumno updated"),
             @ApiResponse(responseCode = "500", description = "Internal error")})
     @PutMapping("/{id}")
-    public ResponseEntity<?> editar(@RequestBody Alumno alumno, @PathVariable Long id){
+    public ResponseEntity<?> editar(@Valid @RequestBody Alumno alumno, BindingResult result,
+                                    @PathVariable Long id){
+
+        if(result.hasErrors()){
+            return this.validar(result);
+        }
 
         Optional<Alumno> o = service.findById(id);
         if(o.isEmpty()){
@@ -103,5 +115,13 @@ public class AlumnoController {
 
         service.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    private ResponseEntity<?> validar(BindingResult result){
+        Map<String, Object> errores = new HashMap<>();
+        result.getFieldErrors().forEach(err -> {
+            errores.put(err.getField(), " El campo " + err.getField() + " " + err.getDefaultMessage());
+        });
+        return ResponseEntity.badRequest().body(errores);
     }
 }
