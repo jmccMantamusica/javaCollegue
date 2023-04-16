@@ -47,6 +47,7 @@ public class Alumno {
         this.setNombre(alumnoRequest.getNombre());
         this.setApellido(alumnoRequest.getApellido());
         this.setEmail(alumnoRequest.getEmail());
+        this.setFoto(alumnoRequest.getFoto());
 
         return this;
     }

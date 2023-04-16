@@ -14,6 +14,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.awt.*;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +26,23 @@ public class AlumnoController {
 
     @Autowired
     private AlumnoService service;
+
+    @Operation(description = "Return image of the id bundled into Response", summary ="Return 204 if no data found")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "Exito: Imagen."),
+            @ApiResponse(responseCode = "500", description = "Internal error")})
+    @GetMapping("/uploads/img/{id}")
+    public ResponseEntity<?> verFoto(@PathVariable Long id){
+        Optional<Alumno> o = service.findById(id);
+        if(o.isEmpty() || o.get().getFoto() == null){
+            return ResponseEntity.notFound().build();
+        }
+
+        Resource imagen = new ByteArrayResource(o.get().getFoto());
+        return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_JPEG)
+                .body(imagen);
+    }
 
     @Operation(description = "Return all page bundled into Response", summary ="Return 204 if no data found")
     @ApiResponses(value = {
@@ -83,6 +102,20 @@ public class AlumnoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(alumnoDB);
     }
 
+    @Operation(description = "Return alumno updated bundled into Response")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201",description = "Alumno"),
+            @ApiResponse(responseCode = "500", description = "Internal error")})
+    @PostMapping("crear-con-foto")
+    public ResponseEntity<?> crearConFoto(@Valid Alumno alumno, BindingResult result,
+                                   @RequestParam MultipartFile archivo) throws IOException {
+        if(!archivo.isEmpty()){
+            alumno.setFoto(archivo.getBytes());
+        }
+
+        return super.crear(alumno, result);
+    }
+
     @Operation(description = "Return alumno updated")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201",description = "Alumno updated"),
@@ -100,6 +133,37 @@ public class AlumnoController {
             return ResponseEntity.notFound().build();
         }
         Alumno alumnoDB = o.get().generarAlumno(alumno);
+        Alumno alumnoFinal = service.save(alumnoDB);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(alumnoFinal);
+
+    }
+
+    @Operation(description = "Return alumno updated")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201",description = "Alumno updated"),
+            @ApiResponse(responseCode = "500", description = "Internal error")})
+    @PutMapping("/editar-con-foto/{id}")
+    public ResponseEntity<?> editarConFoto(@Valid Alumno alumno, BindingResult result,
+                                    @PathVariable Long id), @RequestParam MultiparFile archivo) throws IOException {
+
+        if(!archivo.isEmpty()){
+            alumno.setFoto(archivo.getBytes());
+        }
+
+        if(result.hasErrors()){
+            return this.validar(result);
+        }
+
+        Optional<Alumno> o = service.findById(id);
+        if(o.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+        if(!archivo.isEmpty()){
+            alumno.setFoto(archivo.getBytes());
+        }
+        Alumno alumnoDB = o.get().generarAlumno(alumno);
+
         Alumno alumnoFinal = service.save(alumnoDB);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(alumnoFinal);
