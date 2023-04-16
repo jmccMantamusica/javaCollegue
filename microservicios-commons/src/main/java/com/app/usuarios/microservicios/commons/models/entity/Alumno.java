@@ -29,13 +29,20 @@ public class Alumno {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createAt;
 
+    @Lob
+    @JsonIgnore
+    private byte[] foto;
+
     @PrePersist
     public void prePersist() {
         this.createAt = new Date();
     }
 
-    public Alumno generarAlumno(Alumno alumnoRequest){
+    public Integer getFotoHashCode(){
+        return (this.foto != null) ? this.foto.hashCode(): null;
+    }
 
+    public Alumno generarAlumno(Alumno alumnoRequest){
 
         this.setNombre(alumnoRequest.getNombre());
         this.setApellido(alumnoRequest.getApellido());
