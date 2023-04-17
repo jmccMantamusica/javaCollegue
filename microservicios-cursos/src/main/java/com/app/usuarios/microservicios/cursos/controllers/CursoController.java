@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Tag(name = "Curso API", description = "This APi serve all functionality for management Cursos")
 @RestController
@@ -68,6 +69,17 @@ public class CursoController {
         Optional<Curso> o = service.findCursoByAlumnoId(id);
         if(o.isEmpty()){
             return ResponseEntity.notFound().build();
+        }
+        if(o.get() != null){
+            List<Long> examenesIds = (List<Long>) service.obtenerExamenesIdsConRespuestasAlumno(id);
+            List<Examen> examenList = o.get().getExamenes().stream().map(examen -> {
+                if(examenesIds.contains(examen.getId())){
+                    examen.setRespondido(true);
+                }
+                return examen;
+            }).collect(Collectors.toList());
+
+            o.get().setExamenes(examenList);
         }
         return ResponseEntity.ok(o.get());
     }

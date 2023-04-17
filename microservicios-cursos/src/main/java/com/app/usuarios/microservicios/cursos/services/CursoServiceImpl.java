@@ -1,5 +1,6 @@
 package com.app.usuarios.microservicios.cursos.services;
 
+import com.app.usuarios.microservicios.cursos.clients.RespuestaFeignClient;
 import com.app.usuarios.microservicios.cursos.repository.CursoRepository;
 import com.app.usuarios.microservicios.cursos.models.entity.Curso;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,9 @@ public class CursoServiceImpl implements CursoService{
 
     @Autowired
     CursoRepository cursoRepository;
+
+    @Autowired
+    private RespuestaFeignClient client;
 
 
     @Override
@@ -51,5 +55,10 @@ public class CursoServiceImpl implements CursoService{
     @Transactional(readOnly = true)
     public Optional<Curso> findCursoByAlumnoId(Long id) {
         return cursoRepository.findCursoByAlumnoId(id);
+    }
+
+    @Override
+    public Iterable<Long> obtenerExamenesIdsConRespuestasAlumno(Long alumnoId) {
+        return client.obtenerExamenesIdsConRespuestasAlumno(alumnoId);
     }
 }
