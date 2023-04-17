@@ -7,11 +7,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.awt.*;
@@ -113,7 +117,7 @@ public class AlumnoController {
             alumno.setFoto(archivo.getBytes());
         }
 
-        return super.crear(alumno, result);
+        return this.crear(alumno,result);
     }
 
     @Operation(description = "Return alumno updated")
@@ -145,7 +149,7 @@ public class AlumnoController {
             @ApiResponse(responseCode = "500", description = "Internal error")})
     @PutMapping("/editar-con-foto/{id}")
     public ResponseEntity<?> editarConFoto(@Valid Alumno alumno, BindingResult result,
-                                    @PathVariable Long id), @RequestParam MultiparFile archivo) throws IOException {
+                                    @PathVariable Long id, @RequestParam MultipartFile archivo) throws IOException {
 
         if(!archivo.isEmpty()){
             alumno.setFoto(archivo.getBytes());
